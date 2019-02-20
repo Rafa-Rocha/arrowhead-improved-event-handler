@@ -31,7 +31,9 @@ import java.util.Set;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.log4j.PropertyConfigurator;
 import org.glassfish.jersey.media.sse.EventListener;
@@ -81,6 +83,15 @@ public class SubscriberMain extends ArrowheadClientMain {
   }
   
   private void subscribe() {
+	  /*
+	  URI uri;
+	  try {
+		  uri = new URI(baseUri);
+	  } catch (URISyntaxException e) {
+		  throw new AssertionError("Parsing the BASE_URI resulted in an error.", e);
+	  }
+	  */
+	  
 	  Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
 	  WebTarget target = client.target(EH_URI);
 
@@ -97,9 +108,15 @@ public class SubscriberMain extends ArrowheadClientMain {
 		  }
 	  };
 	  
+	  //ArrowheadSystem consumer = new ArrowheadSystem(CONSUMER_NAME, uri.getHost(), uri.getPort(), base64PublicKey);
+	  //String notifyPath = props.getProperty("notify_uri");
+	  
 	  for (String eventType : EVENT_TYPES) {
-		  EventSource eventSource = EventSource.target(target).build();
+		  //EventFilter filter = new EventFilter(eventType, consumer, notifyPath);
+		  EventSource eventSource = EventSource.target(new CustomWebTarget(target, eventType)).build();
+		  //EventSource eventSource = EventSource.target(target).build();
 		  eventSource.register(listener, eventType);
+		  //eventSource.close();
 		  eventSource.open();
 		  subscribedEvents.put(eventType, eventSource);
 		  System.out.println("Subscribed to \"" + eventType + "\" event type.");

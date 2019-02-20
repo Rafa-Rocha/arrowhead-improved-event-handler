@@ -24,6 +24,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -120,9 +121,10 @@ public class EventHandlerResource {
   @GET
   @Path("subscription")
   @Produces(SseFeature.SERVER_SENT_EVENTS)
-  public EventOutput subscribe() {
-      final EventOutput eventOutput = new EventOutput();
-      EventHandlerService.addSubscription(eventOutput);
+  public EventOutput subscribe(@Context HttpHeaders httpheaders) {
+      String eventType = httpheaders.getHeaderString("eventtype");
+	  final EventOutput eventOutput = new EventOutput();
+      EventHandlerService.addSubscription(eventType, eventOutput);
       return eventOutput;
   }
   

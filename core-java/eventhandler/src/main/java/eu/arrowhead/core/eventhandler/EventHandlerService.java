@@ -36,8 +36,8 @@ final class EventHandlerService {
   private static final Logger log = Logger.getLogger(EventHandlerResource.class.getName());
   private static final DatabaseManager dm = DatabaseManager.getInstance();
   private static final HashMap<String, Object> restrictionMap = new HashMap<>();
-  //private static final Map<String, SseBroadcaster> SSE_BROADCASTERS = new ConcurrentHashMap<>();
-  private static SseBroadcaster broadcaster = new SseBroadcaster();
+  private static final Map<String, SseBroadcaster> SSE_BROADCASTERS = new ConcurrentHashMap<>();
+  //private static SseBroadcaster broadcaster = new SseBroadcaster();
   
   private static List<EventFilter> getMatchingEventFilters(PublishEvent pe) {
     restrictionMap.clear();
@@ -93,24 +93,27 @@ final class EventHandlerService {
     return result;
   }
   
+  /*
   static void addSubscription(EventOutput eventOutput) {
 	  broadcaster.add(eventOutput);
   }
-  /*
-  static void addSubscription(EventFilter filter, EventOutput eventOutput) {
-	  // register event type
-	  if (!SSE_BROADCASTERS.containsKey(filter.getEventType())) {
-		  SSE_BROADCASTERS.put(filter.getEventType(), new SseBroadcaster());
+  */
+  static void addSubscription(String eventType, EventOutput eventOutput) {
+	  // register event type if new
+	  if (!SSE_BROADCASTERS.containsKey(eventType)) {
+		  SSE_BROADCASTERS.put(eventType, new SseBroadcaster());
 	  }
 	  
 	  // add subscription
-	  SSE_BROADCASTERS.get(filter.getEventType()).add(eventOutput);
+	  SSE_BROADCASTERS.get(eventType).add(eventOutput);
   }
-  */
   
   static void publishEvent(PublishEvent eventPublished) {
 	  OutboundEvent event = buildEvent(eventPublished);
-	  broadcaster.broadcast(event);
+	  //broadcaster.broadcast(event);
+	  if (SSE_BROADCASTERS.containsKey(eventPublished.getEvent().getType())) {
+		  SSE_BROADCASTERS.get(eventPublished.getEvent().getType()).broadcast(event);
+	  }
   }
   
   private static OutboundEvent buildEvent(PublishEvent eventPublished) {
