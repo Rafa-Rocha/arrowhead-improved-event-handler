@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.validation.constraints.AssertFalse;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -103,7 +104,7 @@ public class SubscriberMain extends ArrowheadClientMain {
 	  
 	  EventListener listener = new EventListener() {
 		  public void onEvent(InboundEvent inboundEvent) {
-			  System.out.println(/*inboundEvent.getName() + "; " +*/ inboundEvent.readData(String.class) + " - " 
+			  System.out.println(/*inboundEvent.getName() + "; " +*/ inboundEvent.readData(String.class) + " at " 
 					  + ZonedDateTime.now().toInstant().toEpochMilli());
 		  }
 	  };
@@ -117,9 +118,10 @@ public class SubscriberMain extends ArrowheadClientMain {
 		  //EventSource eventSource = EventSource.target(target).build();
 		  eventSource.register(listener, eventType);
 		  //eventSource.close();
+		  System.out.println("Going to subscribe to \"" + eventType + "\" event type at " + ZonedDateTime.now().toInstant().toEpochMilli());
 		  eventSource.open();
+		  System.out.println("Subscribed to \"" + eventType + "\" event type at " + ZonedDateTime.now().toInstant().toEpochMilli());
 		  subscribedEvents.put(eventType, eventSource);
-		  System.out.println("Subscribed to \"" + eventType + "\" event type.");
 	  }
   }
 
@@ -166,8 +168,13 @@ public class SubscriberMain extends ArrowheadClientMain {
   
   private static void unsubscribe() {
     for (String eventType : EVENT_TYPES) {
-      subscribedEvents.get(eventType).close();
-      System.out.println("Unsubscribed from \"" + eventType + "\" event type.");
+      //subscribedEvents.get(eventType).close();
+      while (subscribedEvents.get(eventType).isOpen()){
+    	  System.out.println("Going to unsubscribe from \"" + eventType + "\" event type at " + ZonedDateTime.now().toInstant().toEpochMilli());
+    	  subscribedEvents.get(eventType).close();
+    	  System.out.println("Unsubscribed from \"" + eventType + "\" event type at " + ZonedDateTime.now().toInstant().toEpochMilli());
+      }
+      //System.out.println("Unsubscribed from \"" + eventType + "\" event type.");
     }
   }
 

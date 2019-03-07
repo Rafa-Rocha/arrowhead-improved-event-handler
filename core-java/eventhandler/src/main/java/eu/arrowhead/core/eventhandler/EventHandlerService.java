@@ -14,6 +14,8 @@ import eu.arrowhead.common.database.EventFilter;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.messages.Event;
 import eu.arrowhead.common.messages.PublishEvent;
+
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -112,6 +114,7 @@ final class EventHandlerService {
 	  OutboundEvent event = buildEvent(eventPublished);
 	  //broadcaster.broadcast(event);
 	  if (SSE_BROADCASTERS.containsKey(eventPublished.getEvent().getType())) {
+		  System.out.println("Going to send message " + eventPublished.getEvent().getPayload() + " at " + ZonedDateTime.now().toInstant().toEpochMilli());
 		  SSE_BROADCASTERS.get(eventPublished.getEvent().getType()).broadcast(event);
 	  }
   }

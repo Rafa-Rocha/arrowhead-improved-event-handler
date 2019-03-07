@@ -131,7 +131,9 @@ public class EventHandlerResource {
   @POST
   @Path("publish")
   public Response publishEvent(@Valid PublishEvent eventPublished, @Context ContainerRequestContext requestContext) {
-    if (eventPublished.getEvent().getTimestamp() == null) {
+    System.out.println("Received message " + eventPublished.getEvent().getPayload() + " at " + ZonedDateTime.now().toInstant().toEpochMilli());
+	 
+	if (eventPublished.getEvent().getTimestamp() == null) {
       eventPublished.getEvent().setTimestamp(ZonedDateTime.now());
     }
     if (EventHandlerMain.EVENT_PUBLISHING_TOLERANCE > 0) {

@@ -56,17 +56,17 @@ public class PublisherMain extends ArrowheadClientMain {
     int securePort = props.getIntProperty("secure_port", ClientType.PUBLISHER.getSecurePort());
     int usedPort = isSecure ? securePort : insecurePort;
     String type = props.getProperty("event_type");
-    //String payload = props.getProperty("event_payload");
+    String payload = props.getProperty("event_payload");
 
     //Put together the event POJO and send the request to the Event Handler
     ArrowheadSystem source = new ArrowheadSystem(systemName, address, usedPort, base64PublicKey);
     
     int iteration = 1;
-    while (iteration <= 2) {
-    	String payload = "message nº" + iteration;
-    	Event event = new Event(type, payload, ZonedDateTime.now(), null);
+    while (iteration <= 2000) {
+    	//String payload = "message nº" + iteration;
+    	Event event = new Event(type, /*payload +*/ "" + iteration, ZonedDateTime.now(), null);
         PublishEvent eventPublishing = new PublishEvent(source, event, "publisher/feedback");
-        System.out.println("Event published to EH: " + payload + " - " + ZonedDateTime.now().toInstant().toEpochMilli());
+        System.out.println("Event published to EH: " + /*payload +*/ iteration + " at " + ZonedDateTime.now().toInstant().toEpochMilli());
         Utility.sendRequest(ehUri, "POST", eventPublishing);        
         iteration++;
         /*
