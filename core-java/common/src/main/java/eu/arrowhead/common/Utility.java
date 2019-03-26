@@ -90,6 +90,8 @@ public final class Utility {
   private static final String DEFAULT_CONF_DIR = "config" + File.separator + "default.conf";
   private static final String APP_CONF = "app.conf";
   private static final String APP_CONF_DIR = "config" + File.separator + "app.conf";
+  
+  private static final int CPU_CORES = 4;
 
   private Utility() throws AssertionError {
     throw new AssertionError("Arrowhead Common:Utility is a non-instantiable class");
@@ -99,6 +101,8 @@ public final class Utility {
     ClientConfig configuration = new ClientConfig();
     configuration.property(ClientProperties.CONNECT_TIMEOUT, 30000);
     configuration.property(ClientProperties.READ_TIMEOUT, 30000);
+    
+    configuration.property(ClientProperties.ASYNC_THREADPOOL_SIZE, CPU_CORES);
 
     Client client;
     if (context != null) {

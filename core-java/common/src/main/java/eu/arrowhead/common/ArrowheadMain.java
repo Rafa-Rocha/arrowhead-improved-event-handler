@@ -39,8 +39,10 @@ import org.apache.log4j.PropertyConfigurator;
 import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator.GenericStoreException;
+import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -223,6 +225,16 @@ public abstract class ArrowheadMain {
     server.getServerConfiguration().addHttpHandler(httpHandler, "/api");
     //Allow message payload for GET and DELETE requests - ONLY to provide custom error message for them
     server.getServerConfiguration().setAllowPayloadForUndefinedHttpMethods(true);
+    
+    int threadPoolSize = props.getIntProperty("thread_pool_size", 0);
+    if (threadPoolSize != 0) {
+    	// Create the thread pool configuration 
+        NetworkListener listener = server.getListener("grizzly");
+        ThreadPoolConfig threadPoolConfig = listener.getTransport().getWorkerThreadPoolConfig();
+        // Reconfigure the thread pool 
+        threadPoolConfig.setCorePoolSize(threadPoolSize); 
+        threadPoolConfig.setMaxPoolSize(threadPoolSize); 
+    }
   }
 
   private void shutdown() {

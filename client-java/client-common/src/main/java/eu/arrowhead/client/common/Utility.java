@@ -77,6 +77,7 @@ public final class Utility {
   private static final String APP_CONF_DIR = "config" + File.separator + "app.conf";
 
   private static final int MAX_CONNECTIONS = 1;
+  private static final int CONNECTION_POOL_SIZE = Utility.getProp().getIntProperty("connection_pool_size", 0);
   
   private Utility() throws AssertionError {
     throw new AssertionError("Arrowhead Common:Utility is a non-instantiable class");
@@ -87,13 +88,14 @@ public final class Utility {
     configuration.property(ClientProperties.CONNECT_TIMEOUT, 30000);
     configuration.property(ClientProperties.READ_TIMEOUT, 30000);
     
-    // Connection Pooling
-    PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-    //connectionManager.setMaxTotal(MAX_CONNECTIONS);
-    connectionManager.setDefaultMaxPerRoute(MAX_CONNECTIONS);
-    configuration.property(ApacheClientProperties.CONNECTION_MANAGER, connectionManager);
-    configuration.connectorProvider(new ApacheConnectorProvider());
-
+    if (CONNECTION_POOL_SIZE != 0) {
+    	// Connection Pooling
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        //connectionManager.setMaxTotal(MAX_CONNECTIONS);
+        connectionManager.setDefaultMaxPerRoute(MAX_CONNECTIONS);
+        configuration.property(ApacheClientProperties.CONNECTION_MANAGER, connectionManager);
+        configuration.connectorProvider(new ApacheConnectorProvider());
+    }
 
     Client client;
     if (context != null) {
