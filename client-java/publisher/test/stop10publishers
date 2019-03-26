@@ -1,9 +1,0 @@
-#!/bin/bash
-#More sleep time between these commands might be needed on slower devices like a Raspberry Pi (because of the database accesses)
-echo Shutting down Publishers
-pkill -f publisher-4.0.jar
-
-while pgrep -f publisher-4.0.jar; do
-  kill -KILL $(ps aux | grep 'publisher-4.0.jar' | awk '{print $2}')
-  echo Publishers forcefully killed
-done
